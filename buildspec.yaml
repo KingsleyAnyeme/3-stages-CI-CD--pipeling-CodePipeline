@@ -1,0 +1,24 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.9 # Install python 3.9 on the ubuntu env.
+  pre_build:
+    commands:
+      - echo WE ARE ENTERING THE PRE-BUILD PHASE
+      - echo checking the python version install
+      - python --version
+  build:
+    commands:
+      - echo ***Build started on `date` ***
+      - pwd
+      - cat /etc/*release
+  post_build:
+    commands:
+      - echo ***Build completed on `date`***
+      - echo Build created in FINLAND, launch in US-EAST-1
+      - echo Build run by KINGSLEY ANYEME
+artifacts:
+  files:
+    - '**/*' # zip everything up back.

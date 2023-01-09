@@ -37,14 +37,14 @@ Parameters: # a section
         - Test Env.
       ConstraintDescription: must be a Prod Env. or Test 
   
-  Mappings: 
-    RegionAndInstanceTypeToAMIID: 
-      us-east-1: 
-        Test Env.: "ami-82371e91"
-        Prod Env.: "ami-82371e91"
-      us-west-1: 
-        Test Env.: "ami-b0c50254"
-        Prod Env.: "ami-b0c50254"
+  # Mappings: 
+  #   RegionAndInstanceTypeToAMIID: 
+  #     us-east-1: 
+  #       Test Env.: "ami-82371e91"
+  #       Prod Env.: "ami-82371e91"
+  #     us-west-1: 
+  #       Test Env.: "ami-b0c50254"
+  #       Prod Env.: "ami-b0c50254"
         
 #      ...other regions and AMI IDs...
 

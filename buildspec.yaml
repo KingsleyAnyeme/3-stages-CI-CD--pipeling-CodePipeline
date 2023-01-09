@@ -1,0 +1,38 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.9 # Install python 3.9 on the ubuntu env.
+  pre_build:
+    commands: # still ungoing
+      - echo WE ARE ENTERING THE PRE-BUILD PHASE
+
+      - echo checking the python version install
+      - python --version
+
+      - echo Installing CFN-LINT
+      - pip3 install cfn-lint
+
+      - echo Checking the CFN-LINT version
+      - cfn-lint --version
+
+  build:
+    commands:
+      - echo *** TESTING OUR TEMPLATE ***
+      - cfn-lint EC2-4Test-n-Prod.yaml
+
+      - echo *** Build started on `date` ***
+   # Test and parkage the CF template
+   # A command to build our cfn template
+      - aws cloudformation package --template-file EC2-4Test-n-Prod.yaml --s3-bucket ec2-deploy-artifact-bucket --output-template-file outputemplate.yaml
+  post_build:
+    commands:
+      - echo *** Build completed on `date`***
+      - echo Build created in FINLAND, launch in ${AWS::Region}
+      - echo Build run by KINGSLEY ANYEME
+artifacts:
+  files: # The below 2 files will comprise of my build artifact
+    - EC2-4Test-n-Prod.yaml 
+    - outputemplate.yaml
+

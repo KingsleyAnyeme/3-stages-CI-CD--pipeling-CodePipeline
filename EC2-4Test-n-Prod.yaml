@@ -1,0 +1,86 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >- # AWS::EC2::Instance stack
+    An AWS CloudFormation Template for a Linux EC2, using intrinsic 
+    funtions like; !Ref: to reference PARAMETERS and other RESOURCES 
+    within the template, and !FindInMap: for MAPPINGS. **WARNING**, 
+    Note that you are billed for the AWS resources that you use when 
+    you create a stack from this template.
+Metadata: 
+  Authors:
+    Description: Kingsley Anyeme 2022 (kingsley.anyeme@gmail.com)
+
+Parameters: # a section
+  InstanceType:
+    Description: EC2 instance type.
+    Type: String
+    Default: t2.micro
+  KeyName:
+    Description: Name of an existing EC2 key pair for SSH access to the EC2 instance.
+    Type: AWS::EC2::KeyPair::KeyName
+  SSHLocation:
+    Description: The IP address range that can be used to SSH to the EC2 instances
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 0.0.0.0/0
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})" # IP Address
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  ImageId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+  EnvironmentType: 
+      Description: The environment type
+      Type: String
+      Default: Test Env.
+      AllowedValues: 
+        - Prod Env.
+        - Test Env.
+      ConstraintDescription: must be a Prod Env. or Test 
+  
+  Mappings: 
+    RegionAndInstanceTypeToAMIID: 
+      us-east-1: 
+        Test Env.: "ami-82371e91"
+        Prod Env.: "ami-82371e91"
+      us-west-1: 
+        Test Env.: "ami-b0c50254"
+        Prod Env.: "ami-b0c50254"
+        
+#      ...other regions and AMI IDs...
+
+Resources: 
+  WebServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref ImageId
+      InstanceType: !Ref InstanceType # Nothing is hardcoded
+      KeyName: !Ref KeyName
+      SecurityGroups:
+        - !Ref WebServerSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum update -y
+          yum install -y httpd
+          systemctl start httpd
+          systemctl enable httpd
+          echo "<html><body><h1>Hello World from ${EnvironmentType} in ${AWS::Region}<h1></body></html>" > /var/www/html/index.html
+  # Our EC2 SG
+  WebServerSecurityGroup: #security group ID
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: 'Enable HTTP access via port 80 SSH access'
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          FromPort: '80'
+          IpProtocol: tcp
+          ToPort: '80'
+        - CidrIp: !Ref SSHLocation
+          FromPort: "22"
+          IpProtocol: tcp
+          ToPort: "22"
+
+Outputs:
+  InstanceId:
+    Description: InstanceId of the newly created EC2 instance
+    Value: !GetAtt WebServer.PublicIp # return the ip addr

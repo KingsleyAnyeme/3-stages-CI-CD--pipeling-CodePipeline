@@ -36,17 +36,12 @@ Parameters: # a section
         - Prod Env.
         - Test Env.
       ConstraintDescription: must be a Prod Env. or Test 
-  
-  # Mappings: 
-  #   RegionAndInstanceTypeToAMIID: 
-  #     us-east-1: 
-  #       Test Env.: "ami-82371e91"
-  #       Prod Env.: "ami-82371e91"
-  #     us-west-1: 
-  #       Test Env.: "ami-b0c50254"
-  #       Prod Env.: "ami-b0c50254"
-        
-#      ...other regions and AMI IDs...
+  HostedZoneName:
+    Type: String
+    Description: hostedzone name.
+  RecordName: 
+    Type: String
+    Description: website domain name
 
 Resources: 
   WebServer:
@@ -80,7 +75,23 @@ Resources:
           IpProtocol: tcp
           ToPort: "22"
 
+# DNA record for our instance
+  myDNSRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Sub '${HostedZoneName}.'
+      Comment: DNS name for my instance.
+      Name: !Ref RecordName #!Join ['', [!Ref 'WebServer', ., !Ref 'AWS::Region', ., !Ref DNS, .]]
+      Type: A
+      TTL: 60
+      ResourceRecords:
+      - !GetAtt WebServer.PublicIp
+      
 Outputs:
   InstanceId:
     Description: InstanceId of the newly created EC2 instance
     Value: !GetAtt WebServer.PublicIp # return the ip addr
+
+  WebserverDNSName:
+    Description: DNS A record name of the website
+    Value: !Join [ "", [ "http://", !Ref myDNSRecord ] ] # return the Name of the DNS A record

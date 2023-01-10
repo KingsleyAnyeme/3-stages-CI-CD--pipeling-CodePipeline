@@ -11,5 +11,10 @@ to the project, thanks and welcome.
 - Setup Prod env. in another region. (this is done by adding a parelle action to our deploy stage )
 
 3rd part
+- we add a role to permit CF to create a DNS record on our behalf
 - Adding my hostedZoneName in the Parameter and referencing that in the resource.
 - Adding a RecordName base in the Env. E.G; test.xxxxx.com or prod.xxxx.com
+
+4th Setup
+- Parameter overrides
+-{ "KeyName": "awesome-key-west-1", "HostedZoneName": "trustheprocess.com", "RecordName": "prod.trustheprocess.com", "EnvironmentType": "Prod Env." }

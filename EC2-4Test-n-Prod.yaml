@@ -7,7 +7,7 @@ Description: >- # AWS::EC2::Instance stack
     you create a stack from this template.
 Metadata: 
   Authors:
-    Description: Kingsley Anyeme 2022 (kingsley.anyeme@gmail.com)
+    Description: Kingsley Anyeme 2023 (kingsley.anyeme@gmail.com)
 
 Parameters: # a section
   InstanceType:
